@@ -1,0 +1,68 @@
+#!/bin/bash
+
+help()
+{
+    echo "Usage: ./smol <ARG> <OPT>"
+    echo "The script creates a directory with useful scripts for compiling and running with a main.c file."
+    echo "* ARG:"
+    echo "  Is a directory name."
+    echo "  If the directory already exists, the script will inform you and will exit."
+    echo "* OPT:"
+    echo "  mylib - 'build' and 'run' executables for compiling will include the -I ~/mylib option."
+}
+
+if [ "$#" == 0 ]; then
+    echo "Illegal number of parameters"
+    echo ""
+    help
+    exit 69
+fi
+
+if [ "$1" == "help" ]; then
+    help
+    exit 0
+fi
+
+if [ -d "$1" ]; then
+    echo "The directory '$1' already exists!"
+    echo ""
+    help
+    exit 69
+fi
+
+compile="gcc -Wall -Wextra -o o main.c"
+compileLib="gcc -Wall -Wextra -I ~/mylib -o o main.c"
+
+mkdir $1
+touch $1/main.c
+echo "#include <stdio.h>" > $1/main.c
+echo "" >> $1/main.c
+echo "int main(void)" >> $1/main.c
+echo "{" >> $1/main.c
+echo "    printf(\"Just Monika.\\n\");" >> $1/main.c
+echo "    return 0;" >> $1/main.c
+echo "}" >> $1/main.c
+
+touch $1/run
+echo "#!/bin/bash" > $1/run
+echo "" >> $1/run
+if [ "$2" == "mylib" ]; then
+    echo "$compileLib && ./o" >> $1/run
+else
+    echo "$compile && ./o" >> $1/run
+fi
+chmod +x $1/run
+
+touch $1/build
+echo "#!/bin/bash" > $1/build
+echo "" >> $1/build
+if [ "$2" == "mylib" ]; then
+    echo $compileLib >> $1/build
+else
+    echo $compile >> $1/build
+fi
+chmod +x $1/build
+
+echo "Smol project '$1' created successfully!"
+
+exit 0
