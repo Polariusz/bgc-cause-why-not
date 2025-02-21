@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc -Wall -Wextra -I ~/mylib/ -o o main.c && ./o

@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void mallocing_lul()
+{
+    int *foo = malloc(sizeof(int));
+    *foo = 10;
+
+    printf("foo: %d\n", *foo);
+    free(foo);
+}
+
+int main(void)
+{
+    mallocing_lul();
+    return 0;
+}

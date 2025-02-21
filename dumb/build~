@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc -Wall -Wextra -o o -I ~/include main.c

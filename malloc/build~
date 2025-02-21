@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# gcc -Wall -Wextra -o o main.c
+gcc -o o main.c

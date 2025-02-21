@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc -Wall -Wextra -o o helper.h main.c

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc -Wall -Wextra -Werror -o o main.c

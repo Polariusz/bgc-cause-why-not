@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int realloc_lol()
+{
+    int* arr;
+    if((arr = malloc(10 * sizeof(*arr))) == NULL) {
+        printf("malloc to `arr` failed.\n");
+        return 1;
+    }
+    memset(arr, 0, 10 * sizeof(int));
+
+    arr[0] = 10;
+    arr[3] = 30;
+    arr[5] = 50;
+    arr[9] = 90;
+
+    for(int i = 0; i < 10; i++) {
+        printf("%d ", *(arr + i));
+    }
+    printf("\n");
+
+    // noice, giving more space to the array. It's safe too.
+    if((arr = realloc(arr, 20 * sizeof(*arr))) == NULL) {
+        printf("realloc to `arr` failed.\n");
+        return 1;
+    }
+
+    arr[10] = 100;
+    arr[13] = 130;
+    arr[15] = 150;
+    arr[19] = 190;
+
+    for(int i = 0; i < 20; i++) {
+        printf("%d ", *(arr + i));
+    }
+    printf("\n");
+
+    return 0;
+}
+
+// This is good, because whatever is returned is a line which is exacly long as the character len of the line from the file.
+char *readline(FILE *fp)
+{
+    int offset = 0; // counts how many char there are in a line
+    int buffsize = 4; // it doubles the buffsize if there are more characters in a line than what the current value of buffsize is
+    char *buff; // that's at the end of the day one line
+    int c; // this is a character
+
+    if((buff = malloc(buffsize)) == NULL) {
+        printf("malloc to `buff` failed\n");
+        return NULL;
+    }
+
+    while((c = fgetc(fp)), c != '\n' && c != EOF) {
+        // So it ask here if the offset, which is cnt of characters is equal to the buffsize
+        if(offset == buffsize - 1) {
+            // if it is true, then let's increase the buffer size and realloc the buffer which holds the line
+            buffsize *= 2;
+            char *new_buff = realloc(buff, buffsize);
+            if(new_buff == NULL) {
+                printf("realloc to `new_buff` failed\n");
+                free(buff);
+                return NULL;
+            }
+            buff = new_buff;
+        }
+        // Then at the end write the character into the buffer.
+        buff[offset++] = c;
+    }
+    // NEW LINE OR END OF FILE
+
+    // If EOF AND OFFSET (char cnt) IS 0:
+    if(c == EOF && offset == 0) {
+        free(buff);
+        return NULL;
+    }
+
+    // IF THE OFFSET (char cnt) IS LOWER THAN THE BUFFSIZE
+    if(offset < buffsize -1) {
+        // LOWER IT SO THAT THE ALLOCATED MEMORY WILL NOT BE GREATER THAN NESSESARY (+1 for the NUL ('\0'))
+        char* new_buff = realloc(buff, offset + 1);
+        if(new_buff != NULL) {
+            buff = new_buff;
+        }
+    }
+    buff[offset] = '\0';
+
+    return buff;
+}
+
+int main(void)
+{
+    FILE *fp = fopen("text", "r");
+    char* line;
+
+    while((line = readline(fp)) != NULL) {
+        printf("%s\n", line);
+        free(line);
+    }
+
+    return 0;
+}

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc -Wall -Wextra -o o reading_text_file.c && ./o

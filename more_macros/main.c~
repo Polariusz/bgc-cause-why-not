@@ -1,0 +1,18 @@
+#include <stdio.h>
+
+// x = ax² + bx + c
+//
+//   !
+// 0 = ax² + bx + c
+// x = (-b +- sqr(b²-4ac))/(2a)
+
+#define QUADP(a, b, c) ((-(b) + sqrt((b)*(b)-4*(a)*(c)))/(2*(a)))
+#define QUADN(a, b, c) ((-(b) - sqrt((b)*(b)-4*(a)*(c)))/(2*(a)))
+#define QUAD(a, b, c) QUADP(a, b, c) QUADN(a, b, c)
+
+int main(void)
+{
+    printf("0 = 3x² + 10x - 13\nx = " QUAD(3, 10, -13));
+    printf("Just Monika.\n");
+    return 0;
+}
