@@ -16,6 +16,6 @@ int main(void)
     int foo = 42;
     double bar = 69.0;
     my_printf("x is %d, y is %lf\n", foo, bar);
-    printf("Just Monika.\n");
+    my_printf("Just Monika.\n");
     return 0;
 }
