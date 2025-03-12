@@ -1,0 +1,15 @@
+#include <stdio.h>
+
+#ifdef __STDC_NO_COMPLEX__
+#error Complex numbers not supported!
+#endif
+
+#if __STDC_IEC_559_COMPLEX__ != 1
+#error Need IEC 60559 complex support!
+#endif
+
+int main(void)
+{
+    printf("Just Monika.\n");
+    return 0;
+}
