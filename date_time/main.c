@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 
-void declare_nd_print(void)
+void declare_and_print(void)
 {
     time_t now;       // declate time_t
 
@@ -52,7 +52,7 @@ void manually_tm_local(void)
 
 void manually_tm_utc(void)
 {
-    struct tm my_datetime = { // manually loaded struct tm should be in localtime. A bit weird.
+    struct tm my_datetime = { // written with utc, pls use timegm instead of mktime.
         .tm_year=125,         // years since 1900
         .tm_mon=2,            // months since January [0, 11]
         .tm_mday=26,          // day of the month [1, 31]
@@ -70,10 +70,87 @@ void manually_tm_utc(void)
     return;
 }
 
+void printing_time(void)
+{
+    time_t now = time(NULL);
+    struct tm *local = localtime(&now);
+    struct tm *utc = gmtime(&now);
+
+    printf("UTC        : %s", asctime(utc)); // This prints utc time
+    printf("Local Time : %s", ctime(&now)); // with this, the acstime(utc) later prints localtime, without the asctime(local) below prints utc. Am I... missing something?
+    printf("Local Time : %s", asctime(local));
+    printf("UTC-n't    : %s", asctime(utc)); // this prints local time
+    printf("UTC        : %s", asctime(gmtime(&now))); // this prints utc time
+}
+
+void having_control(void)
+{
+    char s[128];
+
+    time_t now = time(NULL);
+
+    // %c: print date as per current locale
+    strftime(s, sizeof(s), "%c", localtime(&now));
+    puts(s);
+
+    // %A: full weekday name
+    // %B: full month name
+    // %d: day of the month
+    strftime(s, sizeof(s), "%A, %B %d", localtime(&now));
+    puts(s);
+
+    // %I: hour (12 hour clock)
+    // %M: minute
+    // %S: second
+    // %p: AM or PM
+    strftime(s, sizeof s, "It's %I:%M:%S %p", localtime(&now));
+    puts(s);
+
+    // %F: ISO 8601 yyyy-mm-dd
+    // %T: ISO 8601 hh:mm:ss
+    // %z: ISO 8601 time zone offset
+    strftime(s, sizeof s, "ISO 8601: %FT%T%z", localtime(&now));
+    puts(s);
+
+    // %Z: timezone name or abbreviation
+    // %W: The week number of the current year as a decimal number,
+    //     range 00 to 53, starting with the first Monday as the
+    //     first day of week 01. (Calculated from tm_yday and tm_wday.)
+    strftime(s, sizeof s, "We are in the %Z timezone and it is the %W week", localtime(&now));
+    puts(s);
+
+    return;
+}
+
+void week_number(void)
+{
+    char s[128];
+
+    struct tm my_datetime = {
+        .tm_year=125,         // years since 1900
+        .tm_mon=0,            // months since January [0, 11]
+        .tm_mday=9,          // day of the month [1, 31]
+        .tm_hour=12,           // hours since midnight [0, 23]
+        .tm_min=0,           // minutes after the hour [0, 59]
+        .tm_sec=0,           // seconds after the minute [0, 59]
+        .tm_isdst=-1,         // Daylight saving time flag
+    };
+
+
+    printf("%s", asctime(&my_datetime));
+    time_t epoch = mktime(&my_datetime);
+
+    // The week number begins from 0.
+    strftime(s, sizeof s, "We are in the %Z timezone and it is the %W week", localtime(&epoch));
+    puts(s);
+
+    return;
+}
+
 int main(void)
 {
-    manually_tm_utc();
+    week_number();
 
-    printf("Just Monika.\n");
+    printf("\nJust Monika.\n");
     return 0;
 }
