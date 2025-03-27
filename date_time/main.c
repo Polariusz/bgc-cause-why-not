@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 void declare_and_print(void)
@@ -147,9 +148,76 @@ void week_number(void)
     return;
 }
 
+void precise(void)
+{
+    struct timespec prec;
+    timespec_get(&prec, TIME_UTC);
+    time_t now = time(NULL);
+
+    printf("by time()  : %ld\n", now);
+    printf("by timespec: %ld, %ld\n", prec.tv_sec, prec.tv_nsec);
+
+    return;
+}
+
+struct TimeDiff {
+    long int max;
+    long int min;
+    long int avg;
+};
+
+int precise_2(void)
+{
+    struct TimeDiff *time_diff = malloc(sizeof(struct TimeDiff));
+    if(time_diff == NULL) {
+	printf("Download more RAM.\n");
+	return 69;
+    }
+    time_diff->max = -1;
+    time_diff->min = -1;
+    time_diff->avg = -1;
+
+    int ready = 0;
+    int div = 0;
+    struct timespec prev;
+    for(int i = 0; i < 1000; i++) {
+	struct timespec next;
+	timespec_get(&next, TIME_UTC);
+
+	if(ready && next.tv_sec == prev.tv_sec) {
+	    if(time_diff->max == -1) {
+		time_diff->max = next.tv_nsec - prev.tv_nsec;
+	    } else if (time_diff->max < next.tv_nsec - prev.tv_nsec) {
+		time_diff->max = next.tv_nsec - prev.tv_nsec;
+	    }
+	    if(time_diff->min == -1) {
+		time_diff->min = next.tv_nsec - prev.tv_nsec;
+	    } else if (time_diff->min > next.tv_nsec - prev.tv_nsec) {
+		time_diff->min = next.tv_nsec - prev.tv_nsec;
+	    }
+	    if(time_diff->avg == -1) {
+		time_diff->avg = next.tv_nsec - prev.tv_nsec;
+		div++;
+	    } else {
+		time_diff->avg += next.tv_nsec - prev.tv_nsec;
+		div++;
+	    }
+	}
+
+	prev = next;
+	ready = 1;
+    }
+    time_diff->avg /= div;
+    printf("max: %ld\n", time_diff->max);
+    printf("min: %ld\n", time_diff->min);
+    printf("avg: %ld\n", time_diff->avg);
+
+    return 0;
+}
+
 int main(void)
 {
-    week_number();
+    precise_2();
 
     printf("\nJust Monika.\n");
     return 0;
